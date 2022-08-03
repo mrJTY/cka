@@ -1,3 +1,5 @@
+set -euo
+
 # Go to root
 apt-get update && apt-get upgrade -y
 
@@ -16,14 +18,11 @@ echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" \
 curl -s \
 	https://packages.cloud.google.com/apt/doc/apt-key.gpg \
 	| apt-key add -
-apt-get upgrade
+apt-get update
 
 # Install kubeadm
 apt-get install -y kubeadm=1.22.1-00 kubelet=1.22.1-00 kubectl=1.22.1-00
 apt-mark hold kubelet kubeadm kubectl
-
-# Get Calico yaml
-wget https://docs.projectcalico.org/manifests/calico.yaml
 
 # Update the hosts and other networking stuff
 # Source: https://github.com/mbaykara/k8s-cluster/blob/main/Vagrantfile

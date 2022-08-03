@@ -28,3 +28,10 @@ sudo chown $(id -u):$(id -g) $HOME/.kube/config
 ```
 
 # Let's install Calico
+
+```
+wget https://docs.projectcalico.org/manifests/calico.yaml
+
+kubectl apply -f ./calico.yaml
+
+```
