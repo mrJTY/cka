@@ -1,9 +1,39 @@
+IFNAME=$1
+
 set -euo
 
-# Go to root
-apt-get update && apt-get upgrade -y
+# Update the hosts and other networking stuff
+# Source: https://github.com/mbaykara/k8s-cluster/blob/main/Vagrantfile
+ADDRESS="$(ip -4 addr show $IFNAME | grep "inet" | head -1 |awk '{print $2}' | cut -d/ -f1)"
+sed -e "s/^.*${HOSTNAME}.*/${ADDRESS} ${HOSTNAME} ${HOSTNAME}.local/" -i /etc/hosts
+
+cat >> /etc/hosts <<EOF
+192.168.33.13 k8s-cp
+192.168.33.14 k8s-worker-1
+192.168.33.15 k8s-worker-2
+EOF
+
+# Set iptables bridging
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+echo '1' > /proc/sys/net/ipv4/ip_forward
+sysctl --system
+
+# load a couple of necessary modules 
+modprobe overlay
+modprobe br_netfilter
+# disable swaping
+sed 's/#   /swap.*/#swap.img/' /etc/fstab
+swapoff -a
+
+service systemd-resolved restart
+
+
 
 # Install some pacakges
+apt-get update && apt-get upgrade -y
 apt-get install -y vim curl containerd
 
 # Setup containerd
@@ -23,32 +53,3 @@ apt-get update
 # Install kubeadm
 apt-get install -y kubeadm=1.22.1-00 kubelet=1.22.1-00 kubectl=1.22.1-00
 apt-mark hold kubelet kubeadm kubectl
-
-# Update the hosts and other networking stuff
-# Source: https://github.com/mbaykara/k8s-cluster/blob/main/Vagrantfile
-IFNAME=$1
-ADDRESS="$(ip -4 addr show $IFNAME | grep "inet" | head -1 |awk '{print $2}' | cut -d/ -f1)"
-sed -e "s/^.*${HOSTNAME}.*/${ADDRESS} ${HOSTNAME} ${HOSTNAME}.local/" -i /etc/hosts
-
-cat >> /etc/hosts <<EOF
-192.168.33.13 k8s-cp
-192.168.33.14 k8s-worker-1
-192.168.33.15 k8s-worker-2
-EOF
-
-# Set iptables bridging
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-EOF
-sudo echo '1' > /proc/sys/net/ipv4/ip_forward
-sudo sysctl --system
-
-# load a couple of necessary modules 
-sudo modprobe overlay
-sudo modprobe br_netfilter
-disable swaping
-sed 's/#   /swap.*/#swap.img/' /etc/fstab
-swapoff -a
-
-service systemd-resolved restart
