@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
     vb.cpus = 2
     vb.name = "k8s-cp"
   end
-  w.vm.provision "setup-hosts", :type => "shell", :path => "install.sh" do |s|
+  w.vm.provision "setup-hosts", :type => "shell", :path => "./install/install.sh" do |s|
   end
   w.vm.provision "shell", inline: <<-SHELL
     apt-get update
@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
   end
 
   config.vm.box = "hashicorp/bionic64"
-  config.vm.define "worker-1" do | w |
+  config.vm.define "k8s-worker-1" do | w |
       w.vm.hostname = "k8s-worker-1"
       w.vm.network "private_network", ip: "192.168.33.14"
 
@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = 1
         vb.name = "worker-1"
       end
-      w.vm.provision "setup-hosts", :type => "shell", :path => "install.sh" do |s|
+      w.vm.provision "setup-hosts", :type => "shell", :path => "./install/install.sh" do |s|
     end
    w.vm.provision "shell", inline: <<-SHELL
      apt-get update
@@ -36,7 +36,7 @@ Vagrant.configure("2") do |config|
   end
   config.vm.box = "hashicorp/bionic64"
   config.vm.define "k8s-worker-2" do | w |
-      w.vm.hostname = "worker-2"
+      w.vm.hostname = "k8s-worker-2"
       w.vm.network "private_network", ip: "192.168.33.15"
 
       w.vm.provider "virtualbox" do |vb|
@@ -44,7 +44,7 @@ Vagrant.configure("2") do |config|
         vb.cpus = 1
         vb.name = "worker-2"
       end
-        w.vm.provision "setup-hosts", :type => "shell", :path => "install.sh" do |s|
+        w.vm.provision "setup-hosts", :type => "shell", :path => "./install/install.sh" do |s|
   end
    w.vm.provision "shell", inline: <<-SHELL
      apt-get update
