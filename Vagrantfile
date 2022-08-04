@@ -2,6 +2,9 @@
 Vagrant.configure("2") do |config|
   config.vm.box = "hashicorp/bionic64"
   config.vm.define "k8s-cp" do | w |
+  w.vm.provision "file", source: "./install/kubeadm-config.yaml", destination: "/home/vagrant/kubeadm-config.yaml"
+  w.vm.provision "file", source: "./install/calico.yaml", destination: "/home/vagrant/calico.yaml"
+  w.vm.provision "file", source: "./install/start-cp.sh", destination: "/home/vagrant/start-cp.sh"
   w.vm.hostname = "k8s-cp"
   w.vm.network "private_network", ip: "192.168.33.13"
   w.vm.provider "virtualbox" do |vb|

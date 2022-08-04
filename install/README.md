@@ -11,17 +11,6 @@ vagrant up
 
 Save this as kubeadm-config.yaml
 
-```yaml
-apiVersion: kubeadm.k8s.io/v1beta2 
-kind: ClusterConfiguration 
-kubernetesVersion: 1.22.1 
-controlPlaneEndpoint: "k8s-cp:6443" 
-networking: 
-  podSubnet: 10.244.0.0/16 # can also be: 192.168.0.0/16
-apiEndpoint:
-  advertiseAddress: 192.168.33.13 # hardcoded in the Vagrantfile
-```
-
 ```sh
 vagrant ssh k8s-cp
 
