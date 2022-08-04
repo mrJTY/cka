@@ -59,3 +59,22 @@ vagrant@k8s-cp:~$ k get nodes
 NAME     STATUS   ROLES                  AGE    VERSION
 k8s-cp   Ready    control-plane,master   4m8s   v1.22.1
 ```
+
+
+# (optional)
+
+Allow the control plane node to run non-infra pods.
+
+```sh
+kubectl describe node | grep -i taint
+
+k taint nodes --all node-role.kubernetes.io/master-
+```
+
+# Alternative CNI: flannel simpler
+
+
+```sh
+apt install -y flannel
+kubectl apply -f https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+```
