@@ -34,7 +34,8 @@ service systemd-resolved restart
 
 # Install some pacakges
 apt-get update && apt-get upgrade -y
-apt-get install -y vim curl containerd
+# https://github.com/weaveworks/weave/issues/3942
+apt-get install -y vim curl containerd=1.5.11-1
 
 # Setup containerd
 mkdir -p /etc/containerd
@@ -51,5 +52,8 @@ curl -s \
 apt-get update
 
 # Install kubeadm
-apt-get install -y kubeadm=1.22.1-00 kubelet=1.22.1-00 kubectl=1.22.1-00
-apt-mark hold kubelet kubeadm kubectl
+apt-get install -y kubeadm=v1.24.1 kubelet kubectl
+
+
+# apt-get install -y kubeadm=1.22.1-00 kubelet=1.22.1-00 kubectl=1.22.1-00
+# apt-mark hold kubelet kubeadm kubectl
