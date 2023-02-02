@@ -74,23 +74,32 @@ But it is not accessible yet outside of the cluster. Let us now expose it.
 
 ```
 k create svc nodeport echoserver -n external --tcp=5005:8080 --dry-run=client -o yaml > nodeport.yaml
+
+k get svc -n external
+NAME         TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+echoserver   NodePort   10.107.158.211   <none>        5005:32000/TCP   32m
+
 ```
 
 `port` is the service port, while `target-port` is the container/pod port
 
+In this case, 5005 is the pod/container port, and 32000 is the port at the cluster.
 
 
-# Accessing from within
 
-To access from within, we have to create a nodeport service IN THE DEFAULT NAMESPACE
+## Now test we can access it from outside the cluster
+
+
+First, find the cluster info
+```
+k cluster-info
+Kubernetes control plane is running at https://192.168.59.100:8443
+```
+
 
 ```
-k create svc nodeport echoserver --tcp=5005:8080 --dry-run=client -o yaml > nodeport.yaml
-k get svc
+wget 192.168.59.100:32000 --tries=1 --timeout=1
 ```
-
-
-
 
 # Create a load balancer
 ```

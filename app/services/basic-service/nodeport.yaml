@@ -5,6 +5,7 @@ metadata:
   labels:
     app: echoserver
   name: echoserver
+  namespace: external
 spec:
   ports:
   - name: 5005-8080
