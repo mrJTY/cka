@@ -90,3 +90,30 @@ backups  cache	lib  local  lock  log  mail  opt  run  spool  tmp
 access.log  error.log
 
 ```
+
+# Creating a new storage class
+A storage class allows administrators to describe a new "class" of storage which may vary in the quality of service, backup policies and other policy defined by the administrators.
+
+
+Let's find out first what storage classes are available in minikube.
+
+```
+$ k get sc
+NAME                 PROVISIONER                RECLAIMPOLICY   VOLUMEBINDINGMODE   ALLOWVOLUMEEXPANSION   AGE
+standard (default)   k8s.io/minikube-hostpath   Delete          Immediate           false                  207d
+
+```
+
+https://kubernetes.io/docs/concepts/storage/storage-classes/#the-storageclass-resource
+
+Create the custom storage class:
+```
+$ k apply -f storage-class.yaml 
+storageclass.storage.k8s.io/custom created
+```
+
+Create a PVC using the custom storage class:
+```bash
+$ k apply -f custom-pvc.yaml 
+persistentvolumeclaim/custom-pvc created
+```

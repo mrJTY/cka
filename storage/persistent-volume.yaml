@@ -10,10 +10,11 @@ spec:
   storageClassName: ""
   # has to be capacity.storage
   capacity:
-    storage: 1Gi
+    storage: 2Gi
   # this is required
   accessModes:
   - ReadWriteOnce
   # this is required
   hostPath:
     path: /tmp/logs
+  persistentVolumeReclaimPolicy: Delete
