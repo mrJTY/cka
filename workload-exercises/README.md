@@ -80,3 +80,53 @@ $ k create secret generic --help
 ```
 k create secret generic --dry-run=client -o yaml --from-literal email=foo@bar.com --from-literal password=super-secret-123 my-secret --namespace workloads > secret.yaml
 ```
+
+Now create a deployment with the secret
+
+```
+k create deploy --image nginx nginx-with-secret --namespace workloads --replicas=1 --dry-run=client -o yaml > nginx-with-secret.yaml
+```
+
+Then we need to add it as a volume mount:
+
+```yaml
+spec:
+  containers:
+  - name: container
+    ...
+    volumeMounts:
+    - name: foo
+      mountPath: "/etc/foo"
+      readOnly: true
+ 
+  # volumes is the same level as containers
+  volumes:
+  - name: foo
+    secret:
+      secretName: my-secret
+```
+
+For help:
+* https://kubernetes.io/docs/concepts/configuration/secret/#restriction-secret-must-exist
+
+Now let's find a running pod to check if the secret is accessible:
+
+```
+$ k get po -n workloads | grep with-secret
+nginx-with-secret-7d4c58d5b5-m64bh   1/1     Running   0          2m15s
+```
+
+```bash
+$ k exec -ti nginx-with-secret-7d4c58d5b5-m64bh -n workloads -- ls /etc/my-secret
+email  password
+
+$ k exec -ti nginx-with-secret-7d4c58d5b5-m64bh -n workloads -- cat /etc/my-secret/email
+foo@bar.com
+
+$ k exec -ti nginx-with-secret-7d4c58d5b5-m64bh -n workloads -- cat /etc/my-secret/password
+super-secret-123
+```
+
+# Clean up
+
+Let's clean up the namespace and tear down the resources for this exercise.
